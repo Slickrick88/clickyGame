@@ -1,21 +1,20 @@
 import React from "react";
 import "./Header.css";
-let score = 0;
-let topScore = 0;
+
 
 const Header = props => (
-  <div className="Header">
+  <nav class="navbar navbar-default">
     <div className="left-Header">
-    <h2>Left Header Content</h2>
+    <h2>{props.title}</h2>
     </div>
 
-    <div className="content">Header Content
+    <div className="content">
     <div className="right-Header">
-    <h2>Score: {score} | Top Score: {topScore}</h2>
+    <h2>Score: {props.score} | Top Score: {props.topScore}</h2>
     </div>
 
     </div>
-  </div>
+  </nav>
 );
 
 export default Header;

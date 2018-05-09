@@ -8,64 +8,106 @@ import "./App.css";
 
 class App extends Component {
 
-  // setup new array with new variable of selected = false
-  // setup a new object
+  //set states
   state = {
     friends,
-    friends2: [],
-    selected: false,
+    picked: [],
     score: 0,
-    topsScore: 0
+    topScore: 0,
+    winLose: "New Game Started",
+    selected: false,
+    alert: "alert alert-secondary"
   };
 
-  // load next picture
-  // componentDidMount(){
-  //   this.loadNextPick();
-  // };
+  // reset
+  restart = () => {
+    console.log("game reset");
+    this.setState({
+      score: 0,
+      // topScore: this.state.topScore,
+      picked: [],
+      selected: false
+    })
+    this.shuffleCards();
+  };
 
-  //selectpicture
+  //shuffle cards
+  shuffle = (arr) => {
+    // loop over elements in array
+    //set i = to the length of the array and decrement each loop
+    for (let i = arr.length - 1; i > 0; i--) {
+      // for each item in the array select random variable
+      // in whats left of the array
+      let j = Math.floor(Math.random() * (i + 1));
+      // switch the location of the i with that random variable
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    };
+    return arr;
+  }
 
-  // //shuffle array
-  // rando = () =>{
-  //   let freinds2 = friends
-  //   let randomN = M
+  shuffleCards = () => {
+    let shuffled = this.shuffle(friends);
+    this.setState({ friends: shuffled });
+  }
 
-  // };
-
-
-
-  selected = id => {
-    // friends.selected = !friend.selected;
+  //handle on click event
+  onClick = id => {
     console.log(id);
-    if (this.selected) {
-      console.log(this.selected);
-      //reset game
+    //check to see if id is in picked
+    if (this.state.picked.includes(id)) {
+      console.log("Bad guess");
+      //update dialog box to tell user they guessed incorrectly
+      this.setState({ winLose: "Bad Guess", alert: "alert alert-danger" })
+      //reset score
+      this.restart();
     } else {
-      this.setState({ selected: true });
-      this.setState({score: this.state.score + 1});
-      if (this.topScore < this.score) {
-        this.setState({topScore: this.state.topScore + 1});
-      };
+      console.log("good guess");
+      //push id to picked
+      this.setState({
+         picked: this.state.picked.concat(id),
+         selected: true ,
+         winLose: "Good Guess",
+         alert: "alert alert-success"
+        });
+      this.scoreUpdate();
     }
+  };
+
+  //update Score
+  scoreUpdate = () => {
+    const nScore = this.state.score + 1;
+    this.setState({ score: nScore });
+    if (this.state.topScore <= nScore) {
+      this.setState({ topScore: nScore });
+    };
+    this.shuffleCards();
   };
 
   render() {
     console.log(this.state)
     return (
       <div>
-        <Header />
+        <Header
+          title="Sponge Bob Clicky Game"
+          score={this.state.score}
+          topScore={this.state.topScore}
+        />
         <Wrapper>
           {this.state.friends.map(friend => (
             <Card
               key={friend.id}
+              id={friend.id}
               name={friend.name}
               image={friend.image}
               selected={friend.selected}
-              onClick={this.selected}
+              onClick={this.onClick}
             />
           ))};
       </Wrapper>
-        <Footer />
+        <Footer
+          winLose={this.state.winLose}
+          alert={this.state.alert}
+        />
       </div>
     );
   };
